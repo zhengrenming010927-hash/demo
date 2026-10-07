@@ -1,21 +1,25 @@
 package com.example.demo.controller.controller.service;
 
 import com.example.demo.controller.model.User;
+import com.example.demo.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public User getUserById(Long id) {
-        return new User(id, "user" + id, "Test User");
+        return userRepository.findById(id);
     }
 
     public List<User> getUsers() {
-        return List.of(
-                new User(1L, "user1", "Test User 1"),
-                new User(2L, "user2", "Test User 2"));
+        return userRepository.findAll();
     }
 }
