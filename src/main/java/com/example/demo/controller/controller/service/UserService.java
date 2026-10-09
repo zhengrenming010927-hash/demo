@@ -1,5 +1,6 @@
 package com.example.demo.controller.controller.service;
 
+import com.example.demo.UserCreateRequest;
 import com.example.demo.controller.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    // 根据 id 查询用户，找不到时返回 404
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -24,7 +26,18 @@ public class UserService {
                         "用户不存在"));
     }
 
+    // 查询全部用户
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    // 创建用户并保存到数据库
+    public User createUser(UserCreateRequest request) {
+        User entity = new User();
+
+        entity.setUsername(request.getUsername());
+        entity.setName(request.getName());
+
+        return userRepository.save(entity);
     }
 }
