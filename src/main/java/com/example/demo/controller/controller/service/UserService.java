@@ -25,8 +25,7 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "用户不存在"
-                ));
+                        "用户不存在"));
     }
 
     // 查询全部用户
@@ -52,5 +51,15 @@ public class UserService {
         entity.setName(request.getName());
 
         return userRepository.save(entity);
+    }
+
+    public void deleteUser(Long id) {
+
+        User entity = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"));
+
+        userRepository.delete(entity);
     }
 }
