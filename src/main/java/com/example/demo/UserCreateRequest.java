@@ -1,8 +1,13 @@
 package com.example.demo;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class UserCreateRequest {
 
+    @NotBlank
     private String username;
+
+    @NotBlank
     private String name;
 
     public String getUsername() {

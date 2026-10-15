@@ -5,7 +5,8 @@ import com.example.demo.UserUpdateRequest;
 import com.example.demo.controller.controller.service.UserService;
 import com.example.demo.controller.model.User;
 
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,9 +41,11 @@ public class UserController {
         return userService.getUsers();
     }
 
-    // 创建用户
+    // 创建用户，先校验请求数据
     @PostMapping
-    public User createUser(@RequestBody UserCreateRequest request) {
+    public User createUser(
+            @Valid @RequestBody UserCreateRequest request) {
+
         return userService.createUser(request);
     }
 
@@ -57,7 +60,9 @@ public class UserController {
 
     // 删除用户
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable("id") Long id) {
+
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
