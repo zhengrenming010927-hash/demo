@@ -1,0 +1,44 @@
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/main/resources/application.properties', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex 667aaef..287c401 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -31,3 +31,5 @@[m [mbuild/[m
+ [m
+ ### VS Code ###[m
+ .vscode/[m
+[32m+[m[32m### Local H2 Database ###[m
+[32m+[m[32m/data/[m
+[1mdiff --git a/src/main/resources/application.properties b/src/main/resources/application.properties[m
+[1mindex 5d2c09d..5388ab6 100644[m
+[1m--- a/src/main/resources/application.properties[m
+[1m+++ b/src/main/resources/application.properties[m
+[36m@@ -1,17 +1,21 @@[m
+ spring.application.name=demo[m
+ [m
+[31m-# H2 内存数据库连接[m
+[31m-spring.datasource.url=jdbc:h2:mem:demo[m
+[32m+[m[32m# H2 文件数据库：数据保存到启动目录下的 data 文件夹[m
+[32m+[m[32mspring.datasource.url=jdbc:h2:file:./data/testdb[m
+ spring.datasource.driver-class-name=org.h2.Driver[m
+ spring.datasource.username=sa[m
+ spring.datasource.password=[m
+ [m
+[31m-# 根据实体创建表，应用结束时删除表[m
+[31m-spring.jpa.hibernate.ddl-auto=create-drop[m
+[32m+[m[32m# 根据实体更新表结构，保留已有数据[m
+[32m+[m[32mspring.jpa.hibernate.ddl-auto=update[m
+ [m
+[31m-# 在终端显示执行的 SQL[m
+[32m+[m[32m# 在终端显示 SQL[m
+ spring.jpa.show-sql=true[m
+ spring.jpa.properties.hibernate.format_sql=true[m
+ [m
+ # 关闭请求期间的额外数据库会话[m
+ spring.jpa.open-in-view=false[m
+[32m+[m
+[32m+[m[32m# 开启 H2 浏览器控制台[m
+[32m+[m[32mspring.h2.console.enabled=true[m
+[32m+[m[32mspring.h2.console.path=/h2-console[m
+\ No newline at end of file[m
