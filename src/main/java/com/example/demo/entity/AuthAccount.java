@@ -23,6 +23,8 @@ public class AuthAccount {
 
     @Column(nullable = false)
     private boolean enabled = true;
+    @Column(name = "role")
+    private String role = "USER";
 
     protected AuthAccount() {
     }
@@ -41,5 +43,11 @@ public class AuthAccount {
 
     public boolean isEnabled() {
         return enabled;
+
     }
+
+    public String getRole() {
+        return role;
+    }
+
 }

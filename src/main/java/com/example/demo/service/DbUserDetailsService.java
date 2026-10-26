@@ -25,11 +25,16 @@ public class DbUserDetailsService implements UserDetailsService {
 
         AuthAccount account = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        String role = account.getRole();
+
+        if (role == null || role.isBlank()) {
+            role = "USER";
+        }
 
         return User.withUsername(account.getUsername())
                 .password(account.getPasswordHash())
                 .disabled(!account.isEnabled())
-                .authorities("ROLE_USER")
+                .roles(role)
                 .build();
     }
 }
