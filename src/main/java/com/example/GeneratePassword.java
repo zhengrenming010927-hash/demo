@@ -17,4 +17,4 @@ public class GeneratePassword {
             + "' WHERE USERNAME = 'testuser';"
         );
     }
-}
+} 
