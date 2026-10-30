@@ -1,8 +1,8 @@
-package com.example.demo.controller.controller.service;
+package com.example.demo.service;
 
-import com.example.demo.UserCreateRequest;
-import com.example.demo.UserUpdateRequest;
-import com.example.demo.controller.model.User;
+import com.example.demo.dto.UserCreateRequest;
+import com.example.demo.dto.UserUpdateRequest;
+import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 
 import org.springframework.http.HttpStatus;

@@ -1,9 +1,9 @@
-package com.example.demo.controller.controller;
+package com.example.demo.controller;
 
-import com.example.demo.UserCreateRequest;
-import com.example.demo.UserUpdateRequest;
-import com.example.demo.controller.controller.service.UserService;
-import com.example.demo.controller.model.User;
+import com.example.demo.dto.UserCreateRequest;
+import com.example.demo.dto.UserUpdateRequest;
+import com.example.demo.service.UserService;
+import com.example.demo.entity.User;
 
 import jakarta.validation.Valid;
 

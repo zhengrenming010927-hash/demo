@@ -1,6 +1,6 @@
-package com.example.demo;
+package com.example.demo.config;
 
-import com.example.demo.controller.model.User;
+import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
