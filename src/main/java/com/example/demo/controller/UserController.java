@@ -7,6 +7,8 @@ import com.example.demo.entity.User;
 
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +29,12 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    // 分页查询用户
+    @GetMapping("/page")
+    public Page<User> getUsersPage(Pageable pageable) {
+        return userService.getUsersPage(pageable);
     }
 
     // 根据 id 查询用户

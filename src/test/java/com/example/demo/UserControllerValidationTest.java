@@ -24,6 +24,19 @@ class UserControllerValidationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Test
+    @WithMockUser
+    void usersPageReturns200() throws Exception {
+        mockMvc.perform(get("/api/users/page")
+                        .param("page", "0")
+                        .param("size", "5")
+                        .param("sort", "id,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(5));
+    }
+
     // 提交无效用户信息，检查 400 状态码和字段错误
     @Test
     @WithMockUser

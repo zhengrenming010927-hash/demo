@@ -5,6 +5,8 @@ import com.example.demo.dto.UserUpdateRequest;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,18 +24,24 @@ public class UserService {
 
     // 根据 id 查询用户，不存在时返回 404
     public User getUserById(Long id) {
-
         User entity = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "用户不存在"
-                ));
+                        "用户不存在"));
 
         return new User(
                 entity.getId(),
                 entity.getUsername(),
-                entity.getName()
-        );
+                entity.getName());
+    }
+
+    // 分页查询用户
+    public Page<User> getUsersPage(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(entity -> new User(
+                        entity.getId(),
+                        entity.getUsername(),
+                        entity.getName()));
     }
 
     // 查询全部用户
@@ -43,7 +51,6 @@ public class UserService {
 
     // 创建用户，id 由数据库生成
     public User createUser(UserCreateRequest request) {
-
         User entity = new User();
 
         entity.setUsername(request.getUsername());
@@ -54,12 +61,10 @@ public class UserService {
 
     // 更新用户，保留原来的 id
     public User updateUser(Long id, UserUpdateRequest request) {
-
         User entity = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "用户不存在"
-                ));
+                        "用户不存在"));
 
         entity.setUsername(request.getUsername());
         entity.setName(request.getName());
@@ -69,12 +74,10 @@ public class UserService {
 
     // 删除用户，不存在时返回 404
     public void deleteUser(Long id) {
-
         User entity = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "用户不存在"
-                ));
+                        "用户不存在"));
 
         userRepository.delete(entity);
     }
