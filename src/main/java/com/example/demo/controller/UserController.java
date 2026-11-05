@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -33,7 +36,25 @@ public class UserController {
 
     // 分页查询用户
     @GetMapping("/page")
-    public Page<User> getUsersPage(Pageable pageable) {
+    public Page<User> getUsersPage(
+            @RequestParam(value = "page", required = false) Integer requestedPage,
+            @RequestParam(value = "size", required = false) Integer requestedSize,
+            Pageable pageable) {
+
+        if (requestedPage != null && requestedPage < 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "page must be >= 0"
+            );
+        }
+
+        if (requestedSize != null && requestedSize < 1) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "size must be >= 1"
+            );
+        }
+
         return userService.getUsersPage(pageable);
     }
 

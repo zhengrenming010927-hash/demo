@@ -8,9 +8,20 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, Object>> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex) {
+
+        return ResponseEntity.badRequest().body(
+                Map.of(
+                        "status", 400,
+                        "message", "Invalid parameter: " + ex.getName()));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(
@@ -20,9 +31,8 @@ public class GlobalExceptionHandler {
 
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.putIfAbsent(
-                error.getField(),
-                error.getDefaultMessage()
-            );
+                    error.getField(),
+                    error.getDefaultMessage());
         });
 
         Map<String, Object> response = new LinkedHashMap<>();
