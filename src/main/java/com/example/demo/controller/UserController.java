@@ -44,15 +44,19 @@ public class UserController {
         if (requestedPage != null && requestedPage < 0) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "page must be >= 0"
-            );
+                    "page must be >= 0");
         }
 
         if (requestedSize != null && requestedSize < 1) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "size must be >= 1"
-            );
+                    "size must be >= 1");
+        }
+
+        if (requestedSize != null && requestedSize > 100) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "size must be <= 100");
         }
 
         return userService.getUsersPage(pageable);

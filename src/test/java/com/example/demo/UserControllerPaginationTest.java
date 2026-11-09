@@ -24,6 +24,19 @@ import com.example.demo.entity.User;
 class UserControllerPaginationTest {
 
         @Test
+        @WithMockUser
+        void sizeOverLimitReturns400() throws Exception {
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "101"))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status").value(400))
+                                .andExpect(jsonPath("$.message")
+                                                .value("size must be <= 100"));
+        }
+
+        @Test
         @Transactional
         @WithMockUser
         void getUsersPageSortsDescending() throws Exception {
@@ -95,8 +108,11 @@ class UserControllerPaginationTest {
 
         @Test
         @WithMockUser
-        void nonNumericSizeReturns400Json() throws Exception {
-                mockMvc.perform(get("/api/users/page").param("size", "abc"))
+        void invalidSizeTypeReturns400() throws Exception {
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "abc"))
                                 .andExpect(status().isBadRequest())
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.message").value("Invalid parameter: size"));
@@ -126,8 +142,12 @@ class UserControllerPaginationTest {
         @Test
         @WithMockUser
         void negativeSizeReturns400() throws Exception {
-                mockMvc.perform(get("/api/users/page").param("size", "-1"))
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "-5"))
                                 .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.message").value("size must be >= 1"));
         }
 
