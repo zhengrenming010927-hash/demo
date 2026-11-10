@@ -25,6 +25,98 @@ class UserControllerPaginationTest {
 
         @Test
         @WithMockUser
+        void uppercaseSortDirectionReturns200() throws Exception {
+                // 1. 发送使用大写 DESC 的排序请求
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "5")
+                                                .param("sort", "id,DESC"))
+                                // 2. 验证 HTTP 状态码为 200
+                                .andExpect(status().isOk())
+                                // 3. 验证返回分页数据数组
+                                .andExpect(jsonPath("$.content").isArray());
+        }
+
+        @Test
+        @WithMockUser
+        void emptySortDirectionReturns400() throws Exception {
+                // 1. 发送排序方向为空的请求
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "5")
+                                                .param("sort", "id,"))
+                                // 2. 验证 HTTP 状态码为 400
+                                .andExpect(status().isBadRequest())
+                                // 3. 验证 JSON 状态字段
+                                .andExpect(jsonPath("$.status").value(400))
+                                // 4. 验证错误提示
+                                .andExpect(jsonPath("$.message")
+                                                .value("Invalid sort direction: "));
+        }
+
+        @Test
+        @WithMockUser
+        void invalidSortFormatReturns400() throws Exception {
+                // 1. 发送包含三个部分的排序参数
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "5")
+                                                .param("sort", "id,asc,desc"))
+                                // 2. 验证 HTTP 状态码为 400
+                                .andExpect(status().isBadRequest())
+                                // 3. 验证 JSON 状态码
+                                .andExpect(jsonPath("$.status").value(400))
+                                // 4. 验证具体的格式错误信息
+                                .andExpect(jsonPath("$.message")
+                                                .value("Invalid sort format: id,asc,desc"));
+        }
+
+        @Test
+        @WithMockUser
+        void multipleValidSortFieldsReturns200() throws Exception {
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "5")
+                                                .param("sort", "username,asc", "id,desc"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.content").isArray());
+        }
+
+        @Test
+        @WithMockUser
+        void multipleSortFieldsWithInvalidFieldReturns400() throws Exception {
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "5")
+                                                .param("sort", "id,asc", "unknownField,desc"))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status").value(400))
+                                .andExpect(jsonPath("$.message")
+                                                .value("Unsupported sort field: unknownField"));
+        }
+
+        @Test
+        @WithMockUser
+        void invalidSortFieldReturns400() throws Exception {
+
+                mockMvc.perform(
+                                get("/api/users/page")
+                                                .param("page", "0")
+                                                .param("size", "5")
+                                                .param("sort", "unknownField,asc"))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status").value(400))
+                                .andExpect(jsonPath("$.message")
+                                                .value("Unsupported sort field: unknownField"));
+        }
+
+        @Test
+        @WithMockUser
         void sizeOverLimitReturns400() throws Exception {
                 mockMvc.perform(
                                 get("/api/users/page")
