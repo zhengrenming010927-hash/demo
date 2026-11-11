@@ -4,6 +4,7 @@ import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import com.example.demo.dto.UserCreateRequest;
 import com.example.demo.dto.UserUpdateRequest;
+import com.example.demo.validation.SortParameterValidator;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,23 +20,31 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import jakarta.validation.Valid;
-import java.util.Set;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
+    // 1. 声明用户业务 Service
     private final UserService userService;
 
-    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "username", "name");
+    // 2. 声明排序参数校验组件
+    private final SortParameterValidator sortParameterValidator;
 
-    public UserController(UserService userService) {
+    // 3. 通过构造器注入两个 Spring 组件
+    public UserController(
+            UserService userService,
+            SortParameterValidator sortParameterValidator) {
+
+        // 4. 保存注入的 Service
         this.userService = userService;
+
+        // 5. 保存注入的 Validator
+        this.sortParameterValidator = sortParameterValidator;
     }
 
     @GetMapping("/{id}")
@@ -76,55 +85,10 @@ public class UserController {
                     "size must be <= 100");
         }
 
-        // 4. 检查原始 sort 参数的格式和方向
-        String[] sortParams = request.getParameterValues("sort");
+        // 4. 调用独立组件校验排序字段、方向和格式
+        sortParameterValidator.validate(request, pageable);
 
-        // 4.1 判断是否传入 sort 参数
-        if (sortParams != null) {
-
-            // 4.2 遍历每一个 sort 参数
-            for (String rawSort : sortParams) {
-
-                // 4.3 根据逗号拆分字段和方向
-                String[] parts = rawSort.split(",", -1);
-
-                // 4.4 检查格式：最多只能有两个部分
-                if (parts.length > 2) {
-                    throw new ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "Invalid sort format: " + rawSort);
-                }
-
-                // 4.5 如果指定了方向，检查是否合法
-                if (parts.length == 2) {
-
-                    String direction = parts[1].trim();
-
-                    // 4.6 方向必须是 asc 或 desc
-                    if (!direction.equalsIgnoreCase("asc")
-                            && !direction.equalsIgnoreCase("desc")) {
-
-                        throw new ResponseStatusException(
-                                HttpStatus.BAD_REQUEST,
-                                "Invalid sort direction: " + direction);
-                    }
-                }
-            }
-        }
-
-        // 5. 检查排序字段白名单
-        for (Sort.Order order : pageable.getSort()) {
-
-            String property = order.getProperty();
-
-            if (!ALLOWED_SORT_FIELDS.contains(property)) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Unsupported sort field: " + property);
-            }
-        }
-
-        // 6. 全部检查通过，执行分页查询
+        // 5. 全部校验通过后，执行分页查询
         return userService.getUsersPage(pageable);
     }
 
