@@ -59,37 +59,47 @@ public class UserController {
 
     @GetMapping("/page")
     public Page<User> getUsersPage(
+            // 1. 接收分页页码
             @RequestParam(value = "page", required = false) Integer requestedPage,
+
+            // 2. 接收每页数量
             @RequestParam(value = "size", required = false) Integer requestedSize,
+
+            // 3. 新增：接收可选搜索关键词
+            @RequestParam(value = "keyword", required = false) String keyword,
+
+            // 4. 接收 Spring 自动生成的分页和排序对象
             Pageable pageable,
+
+            // 5. 获取原始 HTTP 请求，用于排序参数校验
             HttpServletRequest request) {
 
-        // 1. 检查 page 不能小于 0
+        // 6. 检查 page 不能小于 0
         if (requestedPage != null && requestedPage < 0) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "page must be >= 0");
         }
 
-        // 2. 检查 size 最小值
+        // 7. 检查 size 不能小于 1
         if (requestedSize != null && requestedSize < 1) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "size must be >= 1");
         }
 
-        // 3. 检查 size 最大值
+        // 8. 检查 size 不能大于 100
         if (requestedSize != null && requestedSize > 100) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "size must be <= 100");
         }
 
-        // 4. 调用独立组件校验排序字段、方向和格式
+        // 9. 保留原来的排序参数校验
         sortParameterValidator.validate(request, pageable);
 
-        // 5. 全部校验通过后，执行分页查询
-        return userService.getUsersPage(pageable);
+        // 10. 将 keyword 和 pageable 一起交给 Service
+        return userService.getUsersPage(keyword, pageable);
     }
 
     @PostMapping

@@ -44,6 +44,35 @@ public class UserService {
                         entity.getName()));
     }
 
+    // 1. 新增支持关键词搜索的分页方法
+    public Page<User> getUsersPage(
+            String keyword, Pageable pageable) {
+
+        // 2. 判断关键词是否为空或只有空格
+        if (keyword == null || keyword.isBlank()) {
+
+            // 3. 没有有效关键词时，调用原来的分页方法
+            return getUsersPage(pageable);
+        }
+
+        // 4. 去除关键词前后的空格
+        String normalizedKeyword = keyword.trim();
+
+        // 5. 查询 username 或 name 包含关键词的用户
+        // 6. Pageable 继续负责分页和排序
+        return userRepository
+                .findByUsernameContainingIgnoreCaseOrNameContainingIgnoreCase(
+                        normalizedKeyword,
+                        normalizedKeyword,
+                        pageable)
+
+                // 7. 将数据库实体转换为 API 使用的 User 对象
+                .map(entity -> new User(
+                        entity.getId(),
+                        entity.getUsername(),
+                        entity.getName()));
+    }
+
     // 查询全部用户
     public List<User> getUsers() {
         return userRepository.findAll();
